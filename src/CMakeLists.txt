@@ -30,8 +30,13 @@ ecbuild_add_library( TARGET   fv3jedilm
                      PRIVATE_LIBS     ${FV3JEDILM_LIB_DEP}
                      INSTALL_HEADERS LISTED )
 
-target_include_directories( fv3jedilm INTERFACE $<BUILD_INTERFACE:${CMAKE_Fortran_MODULE_DIRECTORY}>
-                                                $<INSTALL_INTERFACE:${INSTALL_INCLUDE_DIR}>)
+include_directories( fv3jedilm ${DEPEND_LIB_ROOT}/include_r8 )
+target_include_directories( fv3jedilm INTERFACE "$<BUILD_INTERFACE:${CMAKE_Fortran_MODULE_DIRECTORY}>"
+                                                "$<INSTALL_INTERFACE:${INSTALL_INCLUDE_DIR}>")
+
+if( FV3_FORECAST_MODEL MATCHES "UFS" )
+  add_dependencies( fv3jedilm FMS )
+endif()
 
 if(CMAKE_Fortran_COMPILER_ID MATCHES GNU AND CMAKE_Fortran_COMPILER_VERSION VERSION_GREATER_EQUAL 10)
     target_compile_options(fv3jedilm PRIVATE $<$<COMPILE_LANGUAGE:Fortran>:-fallow-argument-mismatch>)
