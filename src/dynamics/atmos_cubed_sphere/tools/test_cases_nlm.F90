@@ -6847,7 +6847,7 @@ end subroutine terminator_tracers
  real(kind=R_GRID), intent(in):: agrid(is-ng:ie+ng,js-ng:je+ng,2)
  real, intent(inout), dimension(km+1):: ak, bk
  real, intent(inout), dimension(is-ng:ie+ng,js-ng:je+ng,km):: pt, delz
- real, intent(out), dimension(is:ie,js:je,km+1):: pk
+ real, intent(inout), dimension(is:ie,js:je,km+1):: pk
 ! pt is FV's cp*thelta_v
  real, intent(inout), dimension(is-1:ie+1,km+1,js-1:je+1):: pe
 ! Local

@@ -194,7 +194,7 @@ CONTAINS
   integer, intent(inout):: ndif(km+1)
   real, intent(in   ) ::  zs(is-ng:ie+ng,js-ng:je+ng)
   real, intent(inout) ::  zh(is-ng:ie+ng,js-ng:je+ng,km+1)
-  real, intent(  out) ::delz(is-ng:ie+ng,js-ng:je+ng,km)
+  real, intent(inout) ::delz(is-ng:ie+ng,js-ng:je+ng,km)
   real, intent(inout), dimension(is:ie+1,js-ng:je+ng,km):: crx, xfx
   real, intent(inout), dimension(is-ng:ie+ng,js:je+1,km):: cry, yfx
   real, intent(out)   :: ws(is:ie,js:je)

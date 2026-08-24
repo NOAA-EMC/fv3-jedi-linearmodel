@@ -58,8 +58,8 @@ CONTAINS
 &   , grid_type
     REAL, INTENT(IN) :: u(isd:ied, jsd:jed+1)
     REAL, INTENT(IN) :: v(isd:ied+1, jsd:jed)
-    REAL, DIMENSION(isd:ied, jsd:jed), INTENT(OUT) :: ua
-    REAL, DIMENSION(isd:ied, jsd:jed), INTENT(OUT) :: va
+    REAL, DIMENSION(isd:ied, jsd:jed), INTENT(INOUT) :: ua
+    REAL, DIMENSION(isd:ied, jsd:jed), INTENT(INOUT) :: va
     REAL, DIMENSION(isd:ied+1, jsd:jed) :: uc
     REAL, DIMENSION(isd:ied, jsd:jed+1) :: vc
     LOGICAL, INTENT(IN) :: nested, se_corner, sw_corner, ne_corner, &
@@ -385,8 +385,8 @@ CONTAINS
     REAL :: u_ad(isd:ied, jsd:jed+1)
     REAL, INTENT(IN) :: v(isd:ied+1, jsd:jed)
     REAL :: v_ad(isd:ied+1, jsd:jed)
-    REAL, DIMENSION(isd:ied, jsd:jed), INTENT(OUT) :: ua
-    REAL, DIMENSION(isd:ied, jsd:jed), INTENT(OUT) :: va
+    REAL, DIMENSION(isd:ied, jsd:jed), INTENT(INOUT) :: ua
+    REAL, DIMENSION(isd:ied, jsd:jed), INTENT(INOUT) :: va
     REAL, DIMENSION(isd:ied+1, jsd:jed) :: uc
     REAL, DIMENSION(isd:ied+1, jsd:jed) :: uc_ad
     REAL, DIMENSION(isd:ied, jsd:jed+1) :: vc

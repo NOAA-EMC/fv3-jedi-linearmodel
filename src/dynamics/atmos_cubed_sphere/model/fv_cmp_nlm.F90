@@ -56,12 +56,12 @@ contains
  real, intent(in), dimension(is-ng:ie+ng,js-ng:je+ng):: dp, delz
  real, intent(in):: dpln(is:ie,js:je)
  real, intent(inout), dimension(is-ng:ie+ng,js-ng:je+ng):: pt, qv, ql, qi, qr, qs, qg
- real, intent(out):: qa(is-ng:ie+ng,js-ng:je+ng)
+ real, intent(inout):: qa(is-ng:ie+ng,js-ng:je+ng)
  real(kind=R_GRID), intent(in), dimension(is-ng:ie+ng,js-ng:je+ng):: area
  real, intent(inout), dimension(is-ng:,js-ng:):: q_con
  real, intent(inout), dimension(is-ng:,js-ng:):: cappa
  real, intent(inout)::dtdt(is:ie,js:je)
- real, intent(out):: te0(is-ng:ie+ng,js-ng:je+ng)
+ real, intent(inout):: te0(is-ng:ie+ng,js-ng:je+ng)
 !---
  real, dimension(is:ie):: wqsat, dq2dt, qpz, cvm, t0, pt1, icp2, lcp2, tcp2, tcp3,    &
                           den, q_liq, q_sol, src, hvar

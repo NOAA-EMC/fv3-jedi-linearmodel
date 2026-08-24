@@ -2052,6 +2052,7 @@ module fv_nwp_nudge_nlm_mod
       real:: split_time, fac, pdep, r2, r3
       integer year, month, day, hour, minute, second
       integer n, i, j, k, iq, k0
+      logical:: recompute_env   ! recompute the environmental SLP for the current r_vor
 
       real, pointer :: area(:,:)
       real(kind=R_GRID), pointer :: agrid(:,:,:)
@@ -2211,69 +2212,82 @@ module fv_nwp_nudge_nlm_mod
 
       call compute_slp(is, ie, js, je, tm, ps, phis(is:ie,js:je), slp)
 
-    if ( r_vor < 30.E3 .or. p_env<900.E2 ) then
+! Recompute the environmental SLP only when the obs-derived radius/pressure are
+! unusable; the retry below re-enters this step with a larger r_vor.
+    recompute_env = ( r_vor < 30.E3 .or. p_env<900.E2 )
+
+    if ( recompute_env ) then
 
 ! Compute r_vor & p_env
          r_vor = r_min + (slp_env-slp_o)/25.E2*r_inc
 
-123   continue
-      p_count = 0.
-        p_sum = 0.
-        a_sum = 0.
-      do j=js, je
-         do i=is, ie
-            if( dist(i,j)<(r_vor+del_r) .and. dist(i,j)>r_vor .and. phis(i,j)<250.*grav ) then 
-                p_count = p_count + 1.
-                  p_sum = p_sum + slp(i,j)*area(i,j) 
-                  a_sum = a_sum + area(i,j) 
-            endif
-         enddo
-      enddo
-
-      call mp_reduce_sum(p_count)
-
-      if ( p_count<32. ) then
-           if(nudge_debug .and. master) write(*,*) p_count, 'Skipping obs: too few p_count'
-           goto 5000
-      endif
-
-      call mp_reduce_sum(p_sum)
-      call mp_reduce_sum(a_sum)
-      p_env = p_sum / a_sum
-
-      if(nudge_debug .and. master) write(*,*) 'Environmental SLP=', p_env/100., ' computed radius=', r_vor/1.E3
-
-      if ( p_env>1015.E2 .or. p_env<920.E2 ) then
-         if( nudge_debug ) then
-            if(master)  write(*,*) 'Environmental SLP out of bound; skipping obs. p_count=', p_count, p_sum
-            call prt_maxmin('SLP_breeding', slp, is, ie, js, je, 0, 1, 0.01)
-         endif
-         goto 5000
-      endif
-
     endif
 
+    do   ! size the vortex: grow r_vor until the environmental SLP is acceptable
 
-      if ( p_env < max(pre0_env, slp_o + 200.0) ) then
+      if ( recompute_env ) then
+        p_count = 0.
+          p_sum = 0.
+          a_sum = 0.
+        do j=js, je
+           do i=is, ie
+              if( dist(i,j)<(r_vor+del_r) .and. dist(i,j)>r_vor .and. phis(i,j)<250.*grav ) then 
+                  p_count = p_count + 1.
+                    p_sum = p_sum + slp(i,j)*area(i,j) 
+                    a_sum = a_sum + area(i,j) 
+              endif
+           enddo
+        enddo
 
-         r_vor = r_vor + 25.E3
+        call mp_reduce_sum(p_count)
 
-         if(nudge_debug .and. master) then
-            write(*,*) 'Computed environmental SLP too low'
-            write(*,*) ' ', p_env/100., slp_o/100.,pos(1)*rad2deg, pos(2)*rad2deg
-         endif
+        if ( p_count<32. ) then
+             if(nudge_debug .and. master) write(*,*) p_count, 'Skipping obs: too few p_count'
+             goto 5000
+        endif
 
-         if ( slp_o > 1003.E2 .and.  r_vor > 1000.E3 ) then
-!             if(master) write(*,*) 'Failed to size the Vortex for the weak storm'
-              goto 5000
-         endif
+        call mp_reduce_sum(p_sum)
+        call mp_reduce_sum(a_sum)
+        p_env = p_sum / a_sum
 
-         if ( r_vor < 1250.E3 ) goto 123
+        if(nudge_debug .and. master) write(*,*) 'Environmental SLP=', p_env/100., ' computed radius=', r_vor/1.E3
 
-!        if(master) write(*,*) 'Failed to size the Vortex; skipping this storm'
-         goto 5000
-
+        if ( p_env>1015.E2 .or. p_env<920.E2 ) then
+           if( nudge_debug ) then
+              if(master)  write(*,*) 'Environmental SLP out of bound; skipping obs. p_count=', p_count, p_sum
+              call prt_maxmin('SLP_breeding', slp, is, ie, js, je, 0, 1, 0.01)
+           endif
+           goto 5000
+        endif
       endif
+
+        if ( p_env < max(pre0_env, slp_o + 200.0) ) then
+
+           r_vor = r_vor + 25.E3
+
+           if(nudge_debug .and. master) then
+              write(*,*) 'Computed environmental SLP too low'
+              write(*,*) ' ', p_env/100., slp_o/100.,pos(1)*rad2deg, pos(2)*rad2deg
+           endif
+
+           if ( slp_o > 1003.E2 .and.  r_vor > 1000.E3 ) then
+!               if(master) write(*,*) 'Failed to size the Vortex for the weak storm'
+                goto 5000
+           endif
+
+           if ( r_vor < 1250.E3 ) then
+              recompute_env = .true.
+              cycle
+           endif
+
+!          if(master) write(*,*) 'Failed to size the Vortex; skipping this storm'
+           goto 5000
+
+        endif
+
+      exit
+
+    enddo
 
       tau_vt = tau_vt_slp * (1. + (960.E2-slp_o)/100.E2 )
       tau_vt = max(abs(dt), tau_vt)

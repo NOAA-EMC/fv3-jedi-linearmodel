@@ -706,7 +706,7 @@ CONTAINS
     INTEGER, INTENT(INOUT) :: ndif(km+1)
     REAL, INTENT(IN) :: zs(is-ng:ie+ng, js-ng:je+ng)
     REAL, INTENT(INOUT) :: zh(is-ng:ie+ng, js-ng:je+ng, km+1)
-    REAL, INTENT(OUT) :: delz(is-ng:ie+ng, js-ng:je+ng, km)
+    REAL, INTENT(INOUT) :: delz(is-ng:ie+ng, js-ng:je+ng, km)
     REAL, DIMENSION(is:ie+1, js-ng:je+ng, km), INTENT(INOUT) :: crx, xfx
     REAL, DIMENSION(is-ng:ie+ng, js:je+1, km), INTENT(INOUT) :: cry, yfx
     REAL :: ws(is:ie, js:je)
@@ -925,7 +925,7 @@ CONTAINS
     REAL, INTENT(IN) :: zs(is-ng:ie+ng, js-ng:je+ng)
     REAL, INTENT(INOUT) :: zh(is-ng:ie+ng, js-ng:je+ng, km+1)
     REAL, INTENT(INOUT) :: zh_ad(is-ng:ie+ng, js-ng:je+ng, km+1)
-    REAL, INTENT(OUT) :: delz(is-ng:ie+ng, js-ng:je+ng, km)
+    REAL, INTENT(INOUT) :: delz(is-ng:ie+ng, js-ng:je+ng, km)
     REAL, DIMENSION(is:ie+1, js-ng:je+ng, km), INTENT(INOUT) :: crx, xfx
     REAL, DIMENSION(is:ie+1, js-ng:je+ng, km), INTENT(INOUT) :: crx_ad, &
 &   xfx_ad
@@ -1179,7 +1179,7 @@ CONTAINS
     INTEGER, INTENT(INOUT) :: ndif(km+1)
     REAL, INTENT(IN) :: zs(is-ng:ie+ng, js-ng:je+ng)
     REAL, INTENT(INOUT) :: zh(is-ng:ie+ng, js-ng:je+ng, km+1)
-    REAL, INTENT(OUT) :: delz(is-ng:ie+ng, js-ng:je+ng, km)
+    REAL, INTENT(INOUT) :: delz(is-ng:ie+ng, js-ng:je+ng, km)
     REAL, DIMENSION(is:ie+1, js-ng:je+ng, km), INTENT(INOUT) :: crx, xfx
     REAL, DIMENSION(is-ng:ie+ng, js:je+1, km), INTENT(INOUT) :: cry, yfx
     REAL, INTENT(OUT) :: ws(is:ie, js:je)
